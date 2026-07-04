@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Chart</title>
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        body { margin: 0; padding: 0; background: #1e1e2d; }
+        #chart { width: 100%; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="chart"></div>
+    <script>
+        // ایجاد نمودار
+        const chart = LightweightCharts.createChart(document.getElementById('chart'), {
+            layout: {
+                background: { type: 'solid', color: '#1e1e2d' },
+                textColor: '#d1d4dc',
+            },
+            grid: {
+                vertLines: { color: 'rgba(42, 46, 57, 0.5)' },
+                horzLines: { color: 'rgba(42, 46, 57, 0.5)' },
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+            },
+            rightPriceScale: {
+                borderColor: 'rgba(197, 203, 206, 0.4)',
+            },
+            timeScale: {
+                borderColor: 'rgba(197, 203, 206, 0.4)',
+                timeVisible: true,
+                secondsVisible: false,
+            },
+        });
+
+        // سری کندل‌استیک
+        const candleSeries = chart.addCandlestickSeries({
+            upColor: '#26a69a',
+            downColor: '#ef5350',
+            borderUpColor: '#26a69a',
+            borderDownColor: '#ef5350',
+            wickUpColor: '#26a69a',
+            wickDownColor: '#ef5350',
+        });
+
+        // سری EMA
+        const emaLine = chart.addLineSeries({
+            color: '#2962FF',
+            lineWidth: 1,
+            title: 'EMA(50)',
+        });
+
+        // سری نقاط خرید
+        const buyMarkers = chart.addLineSeries({
+            color: 'rgba(38, 166, 154, 0.8)',
+            lineWidth: 0,
+            pointMarkersVisible: true,
+            pointMarkersRadius: 4,
+            lastValueVisible: false,
+        });
+
+        // سری نقاط فروش
+        const sellMarkers = chart.addLineSeries({
+            color: 'rgba(239, 83, 80, 0.8)',
+            lineWidth: 0,
+            pointMarkersVisible: true,
+            pointMarkersRadius: 4,
+            lastValueVisible: false,
+        });
+
+        // تابع دریافت داده از C#
+        window.updateChart = function(candles, ema, buys, sells) {
+            candleSeries.setData(JSON.parse(candles));
+            if (ema) emaLine.setData(JSON.parse(ema));
+            if (buys) buyMarkers.setData(JSON.parse(buys));
+            if (sells) sellMarkers.setData(JSON.parse(sells));
+        };
+    </script>
+</body>
+</html>
